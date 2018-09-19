@@ -1,0 +1,42 @@
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.sql.*;
+import javax.imageio.ImageIO;
+
+public class image_db 
+{
+public static void main(String arg[]) throws Exception 
+{
+Connection con;	ResultSet rs;	PreparedStatement ps, ps1;
+InputStream is;	BufferedImage image;
+Try
+{
+Class.forName("sun.jdbc.odbc.JdbcOdbcDriver");
+con = DriverManager.getConnection("jdbc:odbc:db", "system", "manager");
+
+System.out.println("INSERTING IMAGE....");  //just for information
+ps = con.prepareStatement("insert into img values(?,?)");   //query for insert image
+ps.setInt(1, 11);//first colum,image id(id for name)
+is = new FileInputStream(new File("e:\\IMG\\image1.jpg")); //image file locaton with name
+ps.setBinaryStream(2, is, is.available());//2nd column ,image source
+ps.executeUpdate(); //image inserted
+System.out.println("!!!__IMAGE INSERTED__!!!");
+
+ps1 = con.prepareStatement("select * from img ORDER BY id");//select all of image
+rs = ps1.executeQuery();//execute query
+int i = 0;
+while (rs.next()) 
+{
+i = rs.getInt("id");//getInt(id) for name and identify image
+image = ImageIO.read(rs.getBinaryStream("pic"));//"pic" is COLUMN name
+File ouptut = new File("E:\\IMG\\OUTPUT\\" + i + ".jpg");//writing image output location
+ImageIO.write(image, "jpg", ouptut);//writing image
+System.out.println("IMAGE RETRIVE SUCCESSFULLY !!!, id = "+i);
+}
+}
+catch (Exception e) 
+{
+System.out.println(e.getMessage()); //for display any information
+}
+}
+}
